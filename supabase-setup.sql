@@ -136,3 +136,22 @@ drop policy if exists "Admins delete product images" on storage.objects;
 create policy "Admins delete product images"
 on storage.objects for delete to authenticated
 using (bucket_id = 'velvet-hoof-products' and (select public.is_vh_admin()));
+
+-- Optional starter catalogue: inserted only when the products table is empty.
+insert into public.products (name, description, category, price_iqd, image_url, sizes, colors, stock)
+select 'Classic Saddle Pad', 'A refined everyday saddle pad for horse and rider.', 'For the horse', 85000,
+'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?auto=format&fit=crop&w=800&q=80',
+array['Full','Cob'], array['Olive','Sand'], 8
+where not exists (select 1 from public.products);
+
+insert into public.products (name, description, category, price_iqd, image_url, sizes, colors, stock)
+select 'Stable Essentials', 'Practical accessories for everyday stable life.', 'Accessories', 42000,
+'https://images.unsplash.com/photo-1534307675304-1f7c4e3d2c90?auto=format&fit=crop&w=800&q=80',
+array[]::text[], array['Black'], 12
+where not exists (select 1 from public.products where name = 'Stable Essentials');
+
+insert into public.products (name, description, category, price_iqd, image_url, sizes, colors, stock)
+select 'Equestrian Edit', 'A considered edit for the modern rider.', 'For the rider', 65000,
+'https://images.unsplash.com/photo-1599058917212-d750089bc07e?auto=format&fit=crop&w=800&q=80',
+array['S','M','L'], array[]::text[], 5
+where not exists (select 1 from public.products where name = 'Equestrian Edit');
